@@ -23,3 +23,18 @@ wandb/
 # IDE
 .vscode/
 .idea/
+
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+logs/
+runs/
+wandb/
+*.pt
+*.pth
+*.ckpt
+.vscode/
+.idea/
