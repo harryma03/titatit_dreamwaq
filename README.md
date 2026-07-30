@@ -22,14 +22,15 @@ python环境：3.8
 
 ```bash
 pip install -e ~/isaacgym/python
+python -m pip install -e ~/isaacgym/python
 ```
 #### rsl 
 ```bash
-pip install -e ./rsl_rl
+python -m pip install -e ./rsl_rl
 ```
 #### legged_gym
 ```bash
-pip install -e .
+python -m pip install -e .
 ```
 #### 山猫m20 已经部署实物
 ![m20](m20_deploy.gif)
@@ -40,6 +41,7 @@ pip install -e .
 cd legged_gym
 python legged_gym/scripts/train.py --task=m20 --headless
 ```
+python legged_gym/scripts/train.py --task=titatit --headless
 
 python legged_gym/scripts/train.py --task=go2_handstand --headless
 
@@ -48,7 +50,7 @@ python legged_gym/scripts/train.py --task=go2_legstand --headless
 ### 2. play policy
 ```bash
 cd legged_gym
-python legged_gym/scripts/play.py --task=m20 --num_envs=50
+python legged_gym/scripts/play.py --task=titatit --num_envs=50
 ```
 
 python legged_gym/scripts/play.py --task=go2_handstand --num_envs=50
@@ -70,4 +72,4 @@ vel_scale = 5.0
 
 
 # 致谢
-https://github.com/XinLang2019/Wheel_Legged_Gym
+https://github.com/XinLang2019/Wheel_Legged_Gym# titatit_dreamwaq
