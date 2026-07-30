@@ -1,0 +1,25 @@
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python package metadata
+*.egg-info/
+build/
+dist/
+
+# Training outputs
+logs/
+runs/
+wandb/
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# IDE
+.vscode/
+.idea/

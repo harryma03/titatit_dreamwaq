@@ -2,7 +2,14 @@ import numpy as np
 import os
 from datetime import datetime
 import sys
-sys.path.append("/home/csq/DreamWaQ/legged_gym")
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+RSL_RL_DIR = os.path.join(ROOT_DIR, "rsl_rl")
+for path in (RSL_RL_DIR, ROOT_DIR):
+    if path in sys.path:
+        sys.path.remove(path)
+    sys.path.insert(0, path)
+
 import isaacgym  
 from legged_gym.envs import *
 from legged_gym.utils import get_args, task_registry

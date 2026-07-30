@@ -163,6 +163,7 @@ def get_args():
         {"name": "--horovod", "action": "store_true", "default": False, "help": "Use horovod for multi-gpu training"},
         {"name": "--rl_device", "type": str, "default": "cuda:0", "help": 'Device used by the RL algorithm, (cpu, gpu, cuda:0, cuda:1 etc..)'},
         {"name": "--num_envs", "type": int, "help": "Number of environments to create. Overrides config file if provided."},
+        {"name": "--play_terrain_level", "type": int, "help": "Maximum initial terrain level to use in play.py. Enables curriculum terrain when set."},
         {"name": "--seed", "type": int, "help": "Random seed. Overrides config file if provided."},
         {"name": "--max_iterations", "type": int, "help": "Maximum number of training iterations. Overrides config file if provided."},
     ]
@@ -315,8 +316,9 @@ class PolicyExporterDWAQ(torch.nn.Module):
 
     def forward(self, obs_history):
         # 与训练时完全一致
-        (code,), *_ = self.vae.cenet_forward(obs_history[:, :-57])
-        actor_input = torch.cat((code.unsqueeze(0), obs_history[:, -57:]), dim=1)
+        _, _, _, latent = self.vae.cenet_forward(obs_history[:, :-57])
+        mean_vel, _, mean_latent, _ = latent
+        actor_input = torch.cat((mean_vel, mean_latent, obs_history[:, -57:]), dim=1)
         actions_mean = self.actor(actor_input)
         return actions_mean
 

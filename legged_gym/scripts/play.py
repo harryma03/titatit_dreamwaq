@@ -28,13 +28,22 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-from legged_gym import LEGGED_GYM_ROOT_DIR
 import os
+import sys
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+RSL_RL_DIR = os.path.join(ROOT_DIR, "rsl_rl")
+for path in (RSL_RL_DIR, ROOT_DIR):
+    if path in sys.path:
+        sys.path.remove(path)
+    sys.path.insert(0, path)
 
 import isaacgym
+from legged_gym import LEGGED_GYM_ROOT_DIR
 from legged_gym.envs import *
 from legged_gym.utils import  get_args, export_policy_as_jit, task_registry, Logger
 from legged_gym.utils.helpers import class_to_dict,export_policy_as_dwaq,export_policy_as_dwaq_
+from torch.onnx import OnnxExporterError
 
 import numpy as np
 import torch
@@ -48,9 +57,14 @@ def play(args):
 
     # override some parameters for testing
     env_cfg.env.num_envs = min(env_cfg.env.num_envs, 50)
+    train_terrain_num_rows = env_cfg.terrain.num_rows
     env_cfg.terrain.num_rows = 5
     env_cfg.terrain.num_cols = 5
     env_cfg.terrain.curriculum = False
+    if args.play_terrain_level is not None:
+        env_cfg.terrain.num_rows = max(train_terrain_num_rows, args.play_terrain_level + 1)
+        env_cfg.terrain.curriculum = True
+        env_cfg.terrain.max_init_terrain_level = args.play_terrain_level
     env_cfg.noise.add_noise = False
     # env_cfg.domain_rand.randomize_friction = False
     env_cfg.domain_rand.push_robots = False
@@ -66,8 +80,11 @@ def play(args):
     # export policy as a jit module (used to run it from C++)
     if EXPORT_POLICY:
         path = os.path.join(LEGGED_GYM_ROOT_DIR, 'logs', train_cfg.runner.experiment_name, 'exported', 'policies')
-        export_policy_as_dwaq(ppo_runner.alg.actor_critic,path)
-        print('Exported policy as jit script to: ', path)
+        try:
+            export_policy_as_dwaq(ppo_runner.alg.actor_critic,path)
+            print('Exported policy as ONNX to: ', path)
+        except (ModuleNotFoundError, OnnxExporterError) as exc:
+            print(f'Skipping ONNX export: {exc}')
 
     logger = Logger(env.dt)
     robot_index = 0 # which robot is used for logging
@@ -80,7 +97,7 @@ def play(args):
     img_idx = 0
 
     for i in range(10*int(env.max_episode_length)):
-        env.commands[:, 0]=0.0
+        env.commands[:, 0]=1.0
         env.commands[:, 1]=0.
         env.commands[:, 2]=0.
         actions = policy(obs.detach(),obs_hist.detach())
@@ -95,9 +112,12 @@ def play(args):
             env.set_camera(camera_position, camera_position + camera_direction)
 
         if i < stop_state_log:
+            action_scale = env.cfg.control.action_scale
+            if not isinstance(action_scale, (float, int)):
+                action_scale = action_scale[joint_index]
             logger.log_states(
                 {
-                    'dof_pos_target': actions[robot_index, joint_index].item() * env.cfg.control.action_scale,
+                    'dof_pos_target': actions[robot_index, joint_index].item() * action_scale,
                     'dof_pos': env.dof_pos[robot_index, joint_index].item(),
                     'dof_vel': env.dof_vel[robot_index, joint_index].item(),
                     'dof_torque': env.torques[robot_index, joint_index].item(),
