@@ -1,0 +1,334 @@
+<mujoco model="dynawheel">
+  <compiler angle="radian" meshdir="../meshes/" autolimits="true"/>
+  <option gravity='0 0 -9.806' iterations='50' solver='Newton' timestep='0.0005' cone="elliptic" impratio="100"/>
+
+  <default>
+    <material specular="0" shininess="0.25"/>
+
+    <default class="dynawheel">
+      <!-- <joint stiffness="4.5" damping="1.5" frictionloss="1.5"/> -->
+      <!-- <joint stiffness="0.9" damping="0.3" frictionloss="0.3"/> -->
+      <!-- <joint stiffness="3.6" damping="1.8" frictionloss="0.3"/> -->
+      <!-- <joint stiffness="1.8" damping="0.9" frictionloss="1.0"/> -->
+      <!-- <joint stiffness="0.0" damping="0.5" armature="0.1" /> -->
+      <default class="visual">
+        <geom contype="0" conaffinity="0" group="0" />
+      </default>
+      <default class="collision">
+        <geom group="1" mass="0" density="0" />
+      </default>
+    </default>
+  </default>
+
+  <visual>
+    <rgba com="0.502 1.0 0 0.5" contactforce="0.98 0.4 0.4 0.7" contactpoint="1.0 1.0 0.6 0.4"/>
+    <scale com="0.2" forcewidth="0.035" contactwidth="0.10" contactheight="0.04"/>
+  </visual>
+
+  <asset>
+    <mesh name="Base" file="base_simple.STL"/>
+    <mesh name="LF_hip" file="lf_hip.STL"/>
+    <mesh name="LF_thigh" file="lf_thigh.STL"/>
+    <mesh name="RF_thigh" file="rf_thigh.STL"/>
+    <mesh name="LF_calf" file="lf_calf.STL"/>
+    <mesh name="RF_calf" file="rf_calf.STL"/>
+    <mesh name="LF_wheel" file="lf_wheel.STL"/>
+    <mesh name="RF_wheel" file="rf_wheel.STL"/>
+    <mesh name="LIDAR" file="lidar.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="Base" pos="0 0 0.90" quat="1 0 0 0" childclass="dynawheel">
+    <joint name="floating_base" type="free" />
+    <!-- <inertial mass="33.0" pos="0.0 0.0 0.0" diaginertia="0.345726 1.666093 1.807148"/> -->
+    <inertial mass="35.0" pos="0.0 -0.0 -0.0" fullinertia="0.236918 1.477981 1.527714 0.0 0.0 0.0"/>
+    <geom pos="0 0 0" euler="0 0 0" type="mesh" contype="0" conaffinity="0" density="0" rgba="0.5 0.5 0.5 1" mesh="Base" group="1" />
+    <geom pos="0.47403 0 0.01878" euler="0 0 0" type="mesh" contype="0" conaffinity="0" density="0" rgba="0.5 0.5 0.5 1" mesh="LIDAR" group="1" />
+    <geom pos="0.0 0.0 0.0" euler="0 0 0" type="box" size="0.205 0.165 0.10" rgba="1 0 0 1" group="2" />
+    <geom pos="0.185 0.105 -0.13" euler="0 0 0" type="box" size="0.0125 0.0125 0.03" rgba="1 0 0 1" group="2" />
+    <geom pos="0.185 -0.105 -0.13" euler="0 0 0" type="box" size="0.0125 0.0125 0.03" rgba="1 0 0 1" group="2" />
+    <geom pos="-0.185 0.105 -0.13" euler="0 0 0" type="box" size="0.0125 0.0125 0.03" rgba="1 0 0 1" group="2" />
+    <geom pos="-0.185 -0.105 -0.13" euler="0 0 0" type="box" size="0.0125 0.0125 0.03" rgba="1 0 0 1" group="2" />
+    <geom pos="0.456 0 0.024" euler="0 0 0" type="box" size="0.033 0.07 0.085" rgba="1 0 0 1" group="2" />
+    <site name="imu" pos="0 0 0" quat="1 0 0 0"/>
+    <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <body name="LF_hip" pos="0.346 0.09 0">
+        <inertial mass="4.0" pos="-0.0037293 -0.0028271 -2.3984E-05" diaginertia="0.005458 0.008605 0.005981"/>
+        <joint name="LF_HAA" pos="0 0 0" axis="1 0 0" range="-0.50 0.50" actuatorfrcrange="-200 200"/>
+        <site name="LF_HAA_tor" pos="0 0 0" quat="1 0 0 0"/>
+        <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0 0.8 0 1" mesh="LF_hip" group="1" />
+        <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+        <body name="LF_thigh" pos="0.0 0.1733 0.0">
+          <inertial mass="5.5" pos="-0.003963 -0.044529 -0.029278" fullinertia="0.068416 0.060125 0.017696 0.000018 -0.003286 0.000136"/>
+          <joint name="LF_HFE" pos="0 0 0" axis="0 1 0" range="-1.57 3.14"/>
+          <site name="LF_HFE_tor" pos="0 0 0" euler="0 0 0"/>
+          <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0 0 0.8 1" mesh="LF_thigh" group="1" />
+          <geom pos="0.0 0.0 0.0" euler="1.57 0 0" type="cylinder" size="0.065 0.035" rgba="1 0 0 1" group="2" />
+          <geom pos="-0.035 0 -0.144" euler="0 0 0" type="box" size="0.028 0.035 0.155" rgba="1 0 0 1" group="2" />
+          <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+          <body name="LF_calf" pos="0 0.0 -0.350">
+            <inertial pos="0.006279 0.013363 -0.251104" mass="4.0" fullinertia="0.335338 0.337205 0.007327 0.000054 0.005346 0.018379"/>
+            <joint name="LF_KFE" pos="0 0 0" axis="0 1 0" range="-2.74 -0.87" />
+            <site name="LF_KFE_tor" pos="0 0 0" euler="0 0 0"/>
+            <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0.870588 0.811765 0.764706 1" mesh="LF_calf" group="1" />
+            <geom pos="0.002 0.0 0.008" euler="0 0.04 0" type="box" size="0.02 0.015 0.05" rgba="1 0 0 1" group="2" />
+            <geom pos="0.025 0.0 -0.12" euler="0 -0.29 0" type="box" size="0.016 0.015 0.10" rgba="1 0 0 1" group="2" />
+            <geom pos="0.054 0.0 -0.285" euler="0 0.01 0" type="box" size="0.014 0.015 0.075" rgba="1 0 0 1" group="2" />
+            <geom pos="0.0 0.0 -0.350" euler="1.57 0 0" type="cylinder" size="0.068 0.015" rgba="1 0 0 1" group="2" />
+            <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+            <body name="LF_wheel_motor" pos="0.0 0.0735 -0.35">
+            <inertial pos="0 -0.0 0" mass="1.722" diaginertia="0.00781 0.014943 0.007809"/>
+              <joint name="LF_WHEEL" pos="0 0 0" axis="0 1 0" range="-99999 99999" />
+              <site name="LF_WHEEL_tor" pos="0 0 0" quat="1 0 0 0"/>
+              <geom type="mesh" contype="0" conaffinity="0" density="0" rgba="0 0 0 1" mesh="LF_wheel" group="1"/>
+              <geom pos="0 0 0" type="mesh" mesh="LF_wheel" friction="0.4 0.005 0.0001" rgba="0 0 0 1" group="2"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <body name="LH_hip" pos="-0.346 0.09 0">
+        <inertial mass="4.0" pos="0.0037293 -0.0028271 -2.3984E-05" diaginertia="0.005458 0.008605 0.005981"/>
+        <joint name="LH_HAA" pos="0 0 0" axis="1 0 0" range="-0.50 0.50"/>
+        <site name="LH_HAA_tor" pos="0 0 0" euler="0 0 0"/>
+        <geom type="mesh" pos="0 0 0" euler="0 3.14 0" contype="0" conaffinity="0" density="0" rgba="0 0.8 0 1" mesh="LF_hip" group="1" />
+        <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+        <body name="LH_thigh" pos="0.0 0.1733 0.0">
+          <inertial mass="5.5" pos="-0.003963 -0.044529 -0.029278" fullinertia="0.068416 0.060125 0.017696 0.000018 -0.003286 0.000136"/>
+          <joint name="LH_HFE" pos="0 0 0" axis="0 1 0" range="-1.43 4.58"/>
+          <site name="LH_HFE_tor" pos="0 0 0" euler="0 0 0"/>
+          <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0 0 0.8 1" mesh="LF_thigh" group="1" />
+          <geom pos="0.0 0.0 0.0" euler="1.57 0 0" type="cylinder" size="0.065 0.035" rgba="1 0 0 1" group="2" />
+          <geom pos="-0.035 0.0 -0.144" euler="0 0 0" type="box" size="0.028 0.035 0.155" rgba="1 0 0 1" group="2" />
+          <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+          <body name="LH_calf" pos="0 0 -0.350">
+            <inertial pos="0.006279 0.013363 -0.251104" mass="4.0" fullinertia="0.335338 0.337205 0.007327 0.000054 0.005346 0.018379"/>
+            <joint name="LH_KFE" pos="0 0 0" axis="0 1 0" range="-2.74 -0.87" />
+            <site name="LH_KFE_tor" pos="0 0 0" euler="0 0 0"/>
+            <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0.870588 0.811765 0.764706 1" mesh="LF_calf" group="1" />
+            <geom pos="0.002 0.0 0.008" euler="0 0.04 0" type="box" size="0.02 0.015 0.05" rgba="1 0 0 1" group="2" />
+            <geom pos="0.025 0.0 -0.12" euler="0 -0.29 0" type="box" size="0.016 0.015 0.10" rgba="1 0 0 1" group="2" />
+            <geom pos="0.054 0.0 -0.285" euler="0 0.01 0" type="box" size="0.014 0.015 0.075" rgba="1 0 0 1" group="2" />
+            <geom pos="0.0 0.0 -0.350" euler="1.57 0 0" type="cylinder" size="0.068 0.015" rgba="1 0 0 1" group="2" />
+            <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+            <body name="LH_wheel_motor" pos="0.0 0.0735 -0.35">
+            <inertial pos="0 -0.000777 0" mass="1.722" diaginertia="0.00781 0.014943 0.007809"/>
+              <joint name="LH_WHEEL" pos="0 0 0" axis="0 1 0" range="-99999 99999" />
+              <site name="LH_WHEEL_tor" pos="0 0 0" quat="1 0 0 0"/>
+              <geom type="mesh" contype="0" conaffinity="0" density="0" rgba="0 0 0 1" mesh="LF_wheel" group="1"/>
+              <geom pos="0 0 0" type="mesh" mesh="LF_wheel" friction="0.4 0.005 0.0001" rgba="0 0 0 1" group="2"/>
+            </body>
+          </body>
+        </body>  
+      </body>
+    <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <body name="RF_hip" pos="0.346 -0.09 0">
+        <inertial mass="4.0" pos="-0.0037293 0.0028271 -2.3984E-05" diaginertia="0.005458 0.008605 0.005981"/>
+        <joint name="RF_HAA" pos="0 0 0" axis="1 0 0" range="-0.50 0.50"/>
+        <site name="RF_HAA_tor" pos="0 0 0" quat="1 0 0 0"/>
+        <geom type="mesh" pos="0 0 0" euler="3.14 0 0" contype="0" conaffinity="0" density="0" rgba="0 0.8 0 1" mesh="LF_hip" group="1" />
+        <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+        <body name="RF_thigh" pos="0.0 -0.1733 0.0">
+          <inertial mass="5.5" pos="-0.003963 0.044529 -0.029278" fullinertia="0.068416 0.060125 0.017696 -0.000018 -0.003286 -0.000136"/>
+          <joint name="RF_HFE" pos="0 0 0" axis="0 1 0" range="-1.43 4.58"/>
+          <site name="RF_HFE_tor" pos="0 0 0" euler="0 0 0"/>
+          <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0 0 0.8 1" mesh="RF_thigh" group="1" />
+          <geom pos="0.0 0.0 0.0" euler="1.57 0 0" type="cylinder" size="0.065 0.035" rgba="1 0 0 1" group="2" />
+          <geom pos="-0.035 0 -0.144" euler="0 0 0" type="box" size="0.028 0.035 0.155" rgba="1 0 0 1" group="2" />
+          <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+          <body name="RF_calf" pos="0 0.0 -0.350">
+            <inertial pos="0.006279 -0.013363 -0.251104" mass="4.0" fullinertia="0.335338 0.337205 0.007327 -0.000054 0.005346 -0.018379"/>
+            <joint name="RF_KFE" pos="0 0 0" axis="0 1 0" range="-2.74 -0.87"/>
+            <site name="RF_KFE_tor" pos="0 0 0" euler="0 0 0"/>
+            <geom type="mesh" pos="0 0 0" euler="3.141592653589793 0 0" contype="0" conaffinity="0" density="0" rgba="0.870588 0.811765 0.764706 1" mesh="RF_calf" group="1" />
+            <geom pos="0.002 0.0 0.008" euler="0 0.04 0" type="box" size="0.02 0.015 0.05" rgba="1 0 0 1" group="2" />
+            <geom pos="0.025 0.0 -0.12" euler="0 -0.29 0" type="box" size="0.016 0.015 0.10" rgba="1 0 0 1" group="2" />
+            <geom pos="0.054 0.0 -0.285" euler="0 0.01 0" type="box" size="0.014 0.015 0.075" rgba="1 0 0 1" group="2" />
+            <geom pos="0.0 0.0 -0.350" euler="1.57 0 0" type="cylinder" size="0.068 0.015" rgba="1 0 0 1" group="2" />
+            <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+            <body name="RF_wheel_motor" pos="0.0 -0.0735 -0.35">
+            <inertial pos="0 0.000777 0" mass="1.722" diaginertia="0.00781 0.014943 0.007809"/>
+              <joint name="RF_WHEEL" pos="0 0 0" axis="0 1 0" range="-99999 99999"/>
+              <site name="RF_WHEEL_tor" pos="0 0 0" quat="1 0 0 0"/>
+              <geom type="mesh" contype="0" conaffinity="0" density="0" rgba="0 0 0 1" mesh="RF_wheel" group="1"/>
+              <geom pos="0 0 0" type="mesh" mesh="RF_wheel" friction="0.4 0.005 0.0001" rgba="0 0 0 1" group="2"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <body name="RH_hip" pos="-0.346 -0.09 0">
+        <inertial mass="4.0" pos="0.0037293 0.0028271 -2.3984E-05" diaginertia="0.005458 0.008605 0.005981"/>
+        <joint name="RH_HAA" pos="0 0 0" axis="1 0 0" range="-0.50 0.50"/>
+        <site name="RH_HAA_tor" pos="0 0 0" quat="1 0 0 0"/>
+        <geom type="mesh" pos="0 0 0" euler="0 0 3.14" contype="0" conaffinity="0" density="0" rgba="0 0.8 0 1" mesh="LF_hip" group="1" />
+        <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+        <body name="RH_thigh" pos="0.0 -0.1733 0.0">
+          <inertial mass="5.5" pos="-0.003963 0.044529 -0.029278" fullinertia="0.068416 0.060125 0.017696 -0.000018 -0.003286 -0.000136"/>
+          <joint name="RH_HFE" pos="0 0 0" axis="0 1 0" range="-1.43 4.58"/>
+          <site name="RH_HFE_tor" pos="0 0 0" euler="0 0 0"/>
+          <geom type="mesh" pos="0 0 0" euler="0 0 0" contype="0" conaffinity="0" density="0" rgba="0 0 0.8 1" mesh="RF_thigh" group="1" />
+          <geom pos="0.0 0.0 0.0" euler="1.57 0 0" type="cylinder" size="0.065 0.035" rgba="1 0 0 1" group="2" />
+          <geom pos="-0.035 0 -0.144" euler="0 0 0" type="box" size="0.028 0.035 0.155" rgba="1 0 0 1" group="2" />
+          <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+          <body name="RH_calf" pos="0 0.0 -0.350">
+            <inertial pos="0.006279 -0.013363 -0.251104" mass="4.0" fullinertia="0.335338 0.337205 0.007327 -0.000054 0.005346 -0.018379"/>
+            <joint name="RH_KFE" pos="0 0 0" axis="0 1 0" range="-2.74 -0.87"/>
+            <site name="RH_KFE_tor" pos="0 0 0" euler="0 0 0"/>
+            <geom type="mesh" pos="0 0 0" euler="3.141592653589793 0 0" contype="0" conaffinity="0" density="0" rgba="0.870588 0.811765 0.764706 1" mesh="RF_calf" group="1" />
+            <geom pos="0.002 0.0 0.008" euler="0 0.04 0" type="box" size="0.02 0.015 0.05" rgba="1 0 0 1" group="2" />
+            <geom pos="0.025 0.0 -0.12" euler="0 -0.29 0" type="box" size="0.016 0.015 0.10" rgba="1 0 0 1" group="2" />
+            <geom pos="0.054 0.0 -0.285" euler="0 0.01 0" type="box" size="0.014 0.015 0.075" rgba="1 0 0 1" group="2" />
+            <geom pos="0.0 0.0 -0.350" euler="1.57 0 0" type="cylinder" size="0.068 0.015" rgba="1 0 0 1" group="2" />
+            <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+            <body name="RH_wheel_motor" pos="0.0 -0.0735 -0.35">
+            <inertial pos="0 0.000777 0" mass="1.722" diaginertia="0.00781 0.014943 0.007809"/>
+              <joint name="RH_WHEEL" pos="0 0 0" axis="0 1 0" range="-99999 99999"/>
+              <site name="RH_WHEEL_tor" pos="0 0 0" quat="1 0 0 0"/>
+              <geom type="mesh" contype="0" conaffinity="0" density="0" rgba="0 0 0 1" mesh="RF_wheel" group="1"/>
+              <geom pos="0 0 0" type="mesh" mesh="RF_wheel" friction="0.4 0.005 0.0001" rgba="0 0 0 1" group="2"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="Base" body2="LF_thigh"/>
+    <exclude body1="Base" body2="LH_thigh"/>
+    <exclude body1="Base" body2="RF_thigh"/>
+    <exclude body1="Base" body2="RH_thigh"/>
+    <!-- <exclude body1="LF_hip" body2="LF_thigh"/> -->
+    <!-- <exclude body1="LH_hip" body2="LH_thigh"/> -->
+    <!-- <exclude body1="RF_hip" body2="RF_thigh"/> -->
+    <!-- <exclude body1="RH_hip" body2="RH_thigh"/> -->
+    <exclude body1="LF_thigh" body2="LF_calf"/>
+    <exclude body1="LH_thigh" body2="LH_calf"/>
+    <exclude body1="RF_thigh" body2="RF_calf"/>
+    <exclude body1="RH_thigh" body2="RH_calf"/>
+    
+    <exclude body1="LF_calf" body2="LF_wheel_motor"/>
+    <exclude body1="LH_calf" body2="LH_wheel_motor"/>
+    <exclude body1="RF_calf" body2="RF_wheel_motor"/>
+    <exclude body1="RH_calf" body2="RH_wheel_motor"/>
+
+    <exclude body1="LF_thigh" body2="LF_wheel_motor"/>
+    <exclude body1="LH_thigh" body2="LH_wheel_motor"/>
+    <exclude body1="RF_thigh" body2="RF_wheel_motor"/>
+    <exclude body1="RH_thigh" body2="RH_wheel_motor"/>
+    <!-- <exclude body1="LF_hip" body2="LF_calf"/> -->
+    <!-- <exclude body1="LH_hip" body2="LH_calf"/> -->
+    <!-- <exclude body1="RF_hip" body2="RF_calf"/> -->
+    <!-- <exclude body1="RH_hip" body2="RH_calf"/> -->
+    <exclude body1="Base" body2="LF_wheel_motor"/>
+    <exclude body1="Base" body2="LH_wheel_motor"/>
+    <exclude body1="Base" body2="RF_wheel_motor"/>
+    <exclude body1="Base" body2="RH_wheel_motor"/>
+  </contact>
+
+  <actuator>
+    <motor name="LF_HAA" joint="LF_HAA" gear="1" ctrllimited="true" ctrlrange="-200.1 +200.1"/>
+    <motor name="LF_HFE" joint="LF_HFE" gear="1" ctrllimited="true" ctrlrange="-200.2 +200.2"/>
+    <motor name="LF_KFE" joint="LF_KFE" gear="1" ctrllimited="true" ctrlrange="-200.3 +200.3"/>
+    <motor name="LF_WHEEL" joint="LF_WHEEL" gear="1" ctrllimited="true" ctrlrange="-75.3 +75.3"/>
+    <motor name="LH_HAA" joint="LH_HAA" gear="1" ctrllimited="true" ctrlrange="-200.1 +200.1"/>
+    <motor name="LH_HFE" joint="LH_HFE" gear="1" ctrllimited="true" ctrlrange="-200.2 +200.2"/>
+    <motor name="LH_KFE" joint="LH_KFE" gear="1" ctrllimited="true" ctrlrange="-200.3 +200.3"/>
+    <motor name="LH_WHEEL" joint="LH_WHEEL" gear="1" ctrllimited="true" ctrlrange="-75.3 +75.3"/>
+    <motor name="RF_HAA" joint="RF_HAA" gear="1" ctrllimited="true" ctrlrange="-200.1 +200.1"/>
+    <motor name="RF_HFE" joint="RF_HFE" gear="1" ctrllimited="true" ctrlrange="-200.2 +200.2"/>
+    <motor name="RF_KFE" joint="RF_KFE" gear="1" ctrllimited="true" ctrlrange="-200.3 +200.3"/>
+    <motor name="RF_WHEEL" joint="RF_WHEEL" gear="1" ctrllimited="true" ctrlrange="-75.3 +75.3"/>
+    <motor name="RH_HAA" joint="RH_HAA" gear="1" ctrllimited="true" ctrlrange="-200.1 +200.1"/>
+    <motor name="RH_HFE" joint="RH_HFE" gear="1" ctrllimited="true" ctrlrange="-200.2 +200.2"/>
+    <motor name="RH_KFE" joint="RH_KFE" gear="1" ctrllimited="true" ctrlrange="-200.3 +200.3"/>
+    <motor name="RH_WHEEL" joint="RH_WHEEL" gear="1" ctrllimited="true" ctrlrange="-75.3 +75.3"/>
+  </actuator>
+
+  <sensor>
+    <framequat name="Body_Quat" objtype="site" objname="imu"/>
+    <gyro name="Body_Gyro" site="imu"/>
+    <accelerometer name="Body_Acc" site="imu"/>
+    <jointpos name="LF_HAA_pos" joint="LF_HAA"/>
+    <jointpos name="LF_HFE_pos" joint="LF_HFE"/>
+    <jointpos name="LF_KFE_pos" joint="LF_KFE"/>
+    <jointpos name="LH_HAA_pos" joint="LH_HAA"/>
+    <jointpos name="LH_HFE_pos" joint="LH_HFE"/>
+    <jointpos name="LH_KFE_pos" joint="LH_KFE"/>
+    <jointpos name="RF_HAA_pos" joint="RF_HAA"/>
+    <jointpos name="RF_HFE_pos" joint="RF_HFE"/>
+    <jointpos name="RF_KFE_pos" joint="RF_KFE"/>
+    <jointpos name="RH_HAA_pos" joint="RH_HAA"/>
+    <jointpos name="RH_HFE_pos" joint="RH_HFE"/>
+    <jointpos name="RH_KFE_pos" joint="RH_KFE"/>
+    <jointpos name="LF_WHEEL_pos" joint="LF_WHEEL"/>
+    <jointpos name="LH_WHEEL_pos" joint="LH_WHEEL"/>
+    <jointpos name="RF_WHEEL_pos" joint="RF_WHEEL"/>
+    <jointpos name="RH_WHEEL_pos" joint="RH_WHEEL"/>
+
+    <jointvel name="LF_HAA_vel" joint="LF_HAA"/>
+    <jointvel name="LF_HFE_vel" joint="LF_HFE"/>
+    <jointvel name="LF_KFE_vel" joint="LF_KFE"/>
+    <jointvel name="LH_HAA_vel" joint="LH_HAA"/>
+    <jointvel name="LH_HFE_vel" joint="LH_HFE"/>
+    <jointvel name="LH_KFE_vel" joint="LH_KFE"/>
+    <jointvel name="RF_HAA_vel" joint="RF_HAA"/>
+    <jointvel name="RF_HFE_vel" joint="RF_HFE"/>
+    <jointvel name="RF_KFE_vel" joint="RF_KFE"/>
+    <jointvel name="RH_HAA_vel" joint="RH_HAA"/>
+    <jointvel name="RH_HFE_vel" joint="RH_HFE"/>
+    <jointvel name="RH_KFE_vel" joint="RH_KFE"/>
+    <jointvel name="LF_WHEEL_vel" joint="LF_WHEEL"/>
+    <jointvel name="LH_WHEEL_vel" joint="LH_WHEEL"/>
+    <jointvel name="RF_WHEEL_vel" joint="RF_WHEEL"/>
+    <jointvel name="RH_WHEEL_vel" joint="RH_WHEEL"/>
+
+    <torque name="LF_HAA_tor" site="LF_HAA_tor"/>
+    <torque name="LF_HFE_tor" site="LF_HFE_tor"/>
+    <torque name="LF_KFE_tor" site="LF_KFE_tor"/>
+    <torque name="LH_HAA_tor" site="LH_HAA_tor"/>
+    <torque name="LH_HFE_tor" site="LH_HFE_tor"/>
+    <torque name="LH_KFE_tor" site="LH_KFE_tor"/>
+    <torque name="RF_HAA_tor" site="RF_HAA_tor"/>
+    <torque name="RF_HFE_tor" site="RF_HFE_tor"/>
+    <torque name="RF_KFE_tor" site="RF_KFE_tor"/>
+    <torque name="RH_HAA_tor" site="RH_HAA_tor"/>
+    <torque name="RH_HFE_tor" site="RH_HFE_tor"/>
+    <torque name="RH_KFE_tor" site="RH_KFE_tor"/>
+    <torque name="LF_WHEEL_tor" site="LF_WHEEL_tor"/>
+    <torque name="LH_WHEEL_tor" site="LH_WHEEL_tor"/>
+    <torque name="RF_WHEEL_tor" site="RF_WHEEL_tor"/>
+    <torque name="RH_WHEEL_tor" site="RH_WHEEL_tor"/>
+    
+    <!-- <touch name="lf_touch" site="lf_tc"/> -->
+    <!-- <touch name="lh_touch" site="lh_tc"/> -->
+    <!-- <touch name="rf_touch" site="rf_tc"/> -->
+    <!-- <touch name="rh_touch" site="rh_tc"/> -->
+
+    <!-- <framelinvel name="lf_vel_lin" objtype="site" objname="lf_tc"/> -->
+    <!-- <framelinvel name="lh_vel_lin" objtype="site" objname="lh_tc"/> -->
+    <!-- <framelinvel name="rf_vel_lin" objtype="site" objname="rf_tc"/> -->
+    <!-- <framelinvel name="rh_vel_lin" objtype="site" objname="rh_tc"/> -->
+
+    <!-- <force name="lf_force" site="lf_tc"/> -->
+    <!-- <force name="lh_force" site="lh_tc"/> -->
+    <!-- <force name="rf_force" site="rf_tc"/> -->
+    <!-- <force name="rh_force" site="rh_tc"/> -->
+
+  </sensor>
+
+  <keyframe>
+    <key name="lie" qpos="0.0 0.0 0.14
+                            1.0 0.0 0.0 0.0 
+                            +0.46 +1.06 -2.73 0.0
+                            +0.46 +1.06 -2.73 0.0 
+                            -0.46 +1.06 -2.73 0.0 
+                            -0.46 +1.06 -2.73 0.0" 
+                    ctrl="-0.0 +0.0 -0.0 0.0 
+                          -0.0 -0.0 +0.0 0.0 
+                          +0.0 +0.0 -0.0 0.0 
+                          +0.0 -0.0 +0.0 0.0"/>
+  </keyframe>
+
+</mujoco>

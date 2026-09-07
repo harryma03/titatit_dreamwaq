@@ -1,0 +1,112 @@
+<mujoco model="scene">
+  <include file="dynawheel.xml"/>
+
+  <statistic center="0 0 0.5" extent="2.0" />
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2="0.1 0.2 0.3" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0.0" texture="texplane" texrepeat="1 1" texuniform="true"/>
+  </asset>
+
+  <worldbody>
+    
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" pos="0 0 0" size="0 0 1" type="plane" material="matplane" contype="1"/>
+
+    <geom pos="0.0 4.0 0.00" type="box"  size="0.5 0.5 0.48" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+
+    <!-- 0.10 m -->
+    <geom pos="4.0 0.0 0.00" type="box"  size="3.00 3.00 0.10" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.10" type="box"  size="2.74 2.74 0.10" quat="1.0 0 0 0" rgba="0.50 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.20" type="box"  size="2.48 2.48 0.10" quat="1.0 0 0 0" rgba="0.55 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.30" type="box"  size="2.22 2.22 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.40" type="box"  size="1.96 1.96 0.10" quat="1.0 0 0 0" rgba="0.65 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.50" type="box"  size="1.70 1.70 0.10" quat="1.0 0 0 0" rgba="0.70 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.60" type="box"  size="1.44 1.44 0.10" quat="1.0 0 0 0" rgba="0.75 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.70" type="box"  size="1.18 1.18 0.10" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.80" type="box"  size="0.92 0.92 0.10" quat="1.0 0 0 0" rgba="0.85 0.45 0.45 1"/>
+    <geom pos="4.0 0.0 0.90" type="box"  size="0.66 0.66 0.10" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <!-- 0.15 m -->
+    <geom pos="11.0 0.0 0.00" type="box"  size="3.00 3.00 0.15" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.15" type="box"  size="2.74 2.74 0.15" quat="1.0 0 0 0" rgba="0.50 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.30" type="box"  size="2.48 2.48 0.15" quat="1.0 0 0 0" rgba="0.55 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.45" type="box"  size="2.22 2.22 0.15" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.60" type="box"  size="1.96 1.96 0.15" quat="1.0 0 0 0" rgba="0.65 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.75" type="box"  size="1.70 1.70 0.15" quat="1.0 0 0 0" rgba="0.70 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 0.90" type="box"  size="1.44 1.44 0.15" quat="1.0 0 0 0" rgba="0.75 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 1.05" type="box"  size="1.18 1.18 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 1.20" type="box"  size="0.92 0.92 0.15" quat="1.0 0 0 0" rgba="0.85 0.45 0.45 1"/>
+    <geom pos="11.0 0.0 1.35" type="box"  size="0.66 0.66 0.15" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <!-- 0.175 m -->
+    <geom pos="18.0 0.0 0.000" type="box"  size="3.00 3.00 0.175" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 0.175" type="box"  size="2.74 2.74 0.175" quat="1.0 0 0 0" rgba="0.50 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 0.350" type="box"  size="2.48 2.48 0.175" quat="1.0 0 0 0" rgba="0.55 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 0.525" type="box"  size="2.22 2.22 0.175" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 0.700" type="box"  size="1.96 1.96 0.175" quat="1.0 0 0 0" rgba="0.65 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 0.875" type="box"  size="1.70 1.70 0.175" quat="1.0 0 0 0" rgba="0.70 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 1.050" type="box"  size="1.44 1.44 0.175" quat="1.0 0 0 0" rgba="0.75 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 1.225" type="box"  size="1.18 1.18 0.175" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 1.400" type="box"  size="0.92 0.92 0.175" quat="1.0 0 0 0" rgba="0.85 0.45 0.45 1"/>
+    <geom pos="18.0 0.0 1.575" type="box"  size="0.66 0.66 0.175" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <!-- 0.20 m -->
+    <geom pos="25.0 0.0 0.00" type="box"  size="3.00 3.00 0.20" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 0.20" type="box"  size="2.74 2.74 0.20" quat="1.0 0 0 0" rgba="0.50 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 0.40" type="box"  size="2.48 2.48 0.20" quat="1.0 0 0 0" rgba="0.55 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 0.60" type="box"  size="2.22 2.22 0.20" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 0.80" type="box"  size="1.96 1.96 0.20" quat="1.0 0 0 0" rgba="0.65 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 1.00" type="box"  size="1.70 1.70 0.20" quat="1.0 0 0 0" rgba="0.70 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 1.20" type="box"  size="1.44 1.44 0.20" quat="1.0 0 0 0" rgba="0.75 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 1.40" type="box"  size="1.18 1.18 0.20" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 1.60" type="box"  size="0.92 0.92 0.20" quat="1.0 0 0 0" rgba="0.85 0.45 0.45 1"/>
+    <geom pos="25.0 0.0 1.80" type="box"  size="0.66 0.66 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+
+    <geom pos="1.1 6 0" type="box" size="3.0 3.0 .03" euler="0 -0.1745 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="7.0 6 0" type="box" size="3.0 3.0 .03" euler="0 0.1745 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="8.1 6 0" type="box" size="3.0 3.0 .03" euler="0 -0.2618 0" rgba="0.60 0.60 0.60 1"/>
+    <geom pos="13.88 6 0" type="box" size="3.0 3.0 .03" euler="0 0.2618 0" rgba="0.60 0.60 0.60 1"/>
+    <geom pos="15.1 6 0" type="box" size="3.0 3.0 .03" euler="0 -0.3491 0" rgba="0.60 0.60 0.60 1"/>
+    <geom pos="20.72 6 0" type="box" size="3.0 3.0 .03" euler="0 0.3491 0" rgba="0.80 0.80 0.80 1"/>
+    <geom pos="22.1 6 0" type="box" size="3.0 3.0 .03" euler="0 -0.5236 0" rgba="0.90 0.90 0.90 1" friction="1.0 0.5 0.01"/>
+    <geom pos="27.27 6 0" type="box" size="3.0 3.0 .03" euler="0 0.5236 0" rgba="0.90 0.90 0.90 1" friction="1.0 0.5 0.01"/>
+
+    <!-- 0.05 m -->
+    <geom pos="1.00 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="1.45 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="1.90 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="2.35 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="2.80 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+    <geom pos="3.25 -6.0 0.00" type="box"  size="0.075 2.50 0.05" quat="1.0 0 0 0" rgba="0.45 0.45 0.45 1"/>
+
+    <!-- 0.10 m -->
+    <geom pos="4.00 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="4.45 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="4.90 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="5.35 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="5.80 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+    <geom pos="6.25 -6.0 0.00" type="box"  size="0.075 2.50 0.10" quat="1.0 0 0 0" rgba="0.60 0.45 0.45 1"/>
+
+    <!-- 0.15 m -->
+    <geom pos="7.00 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="7.45 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="7.90 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="8.35 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="8.80 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+    <geom pos="9.25 -6.0 0.00" type="box"  size="0.075 2.50 0.15" quat="1.0 0 0 0" rgba="0.80 0.45 0.45 1"/>
+
+    <!-- 0.20 m -->
+    <geom pos="10.00 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <geom pos="10.45 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <geom pos="10.90 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <geom pos="11.35 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <geom pos="11.80 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    <geom pos="12.25 -6.0 0.00" type="box"  size="0.075 2.50 0.20" quat="1.0 0 0 0" rgba="0.90 0.45 0.45 1"/>
+    
+    
+
+  </worldbody>
+</mujoco>
