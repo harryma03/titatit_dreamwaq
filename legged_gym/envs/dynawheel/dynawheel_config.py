@@ -39,14 +39,14 @@ class DynawheelCfg(BaseConfig):
 
     class commands:
         curriculum = False
-        max_curriculum = 1.2
+        max_curriculum = 1.5
         num_commands = 4
         resampling_time = 10.0
         heading_command = True
 
         class ranges:
-            lin_vel_x = [-1.0, 1.5]
-            lin_vel_y = [-0.6, 0.6]
+            lin_vel_x = [-1.0, 1.0]
+            lin_vel_y = [-0.8, 0.8]
             ang_vel_yaw = [-1.0, 1.0]
             heading = [-3.14, 3.14]
 
@@ -102,6 +102,8 @@ class DynawheelCfg(BaseConfig):
         max_angular_velocity = 1000.0
         max_linear_velocity = 1000.0
         armature = 0.0
+        joint_armature = 0.0
+        wheel_armature = 0.0
         thickness = 0.01
 
     class domain_rand:
@@ -125,6 +127,18 @@ class DynawheelCfg(BaseConfig):
         torque_multiplier_range = [0.85, 1.15]
         randomize_motor_zero_offset = True
         motor_zero_offset_range = [-0.035, 0.035]
+        # Optional Dynawheel fields consumed by _process_dof_props.
+        randomize_joint_friction = False
+        joint_friction_range = [0.01, 0.20]
+        randomize_joint_damping = False
+        joint_damping_range = [0.0, 0.20]
+        randomize_joint_armature = False
+        joint_armature_range = [0.005, 0.015]
+        add_obs_latency = False
+        randomize_obs_motor_latency = False
+        randomize_obs_imu_latency = False
+        range_obs_motor_latency = [0, 0]
+        range_obs_imu_latency = [0, 0]
         add_cmd_action_latency = True
         randomize_cmd_action_latency = True
         range_cmd_action_latency = [0, 3]
@@ -132,20 +146,20 @@ class DynawheelCfg(BaseConfig):
     class rewards:
         class scales:
             termination = -0.8
-            tracking_lin_vel = 3.0
+            tracking_lin_vel = 2.0
             tracking_ang_vel = 1.5
             lin_vel_z = -2.0
             ang_vel_xy = -0.05
-            orientation = -0.5
-            base_height = -10.0
+            orientation = -1.0
+            base_height = -4.0
             torques = -0.000005
             dof_vel = -1e-6
             dof_acc = -1e-7
             collision = -1.0
-            action_rate = -0.011
-            stand_still = -0.5
+            action_rate = -0.02
+            stand_still = -0.8
             dof_pos_limits = -5.0
-            hip_default = -0.5
+            hip_default = -1.2
             run_still = -0.05
 
         only_positive_rewards = True
@@ -154,6 +168,10 @@ class DynawheelCfg(BaseConfig):
         soft_dof_vel_limit = 0.9
         soft_torque_limit = 0.9
         base_height_target = 0.62
+        # Parameters required by DynawheelRobot's clearance state initialization.
+        feet_clearance_target = 0.06
+        feet_clearance_liftoff = 0.005
+        wheel_radius = 0.116
         max_contact_force = 200.0
 
     class normalization:

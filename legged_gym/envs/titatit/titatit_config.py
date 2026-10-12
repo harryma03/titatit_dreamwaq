@@ -42,10 +42,11 @@ class Titatit_Cfg(BaseConfig):
         max_curriculum = 1.2
         num_commands = 4 # default: lin_vel_x, lin_vel_y, ang_vel_yaw, heading (in heading mode ang_vel_yaw is recomputed from heading error)
         resampling_time = 10. # time before command are changed[s]
-        heading_command = False # if true: compute ang vel command from heading error
+        stand_ratio = 0.0
+        heading_command = True # if true: compute ang vel command from heading error
         class ranges:
-            lin_vel_x = [-2.0,2.0] # min max [m/s]
-            lin_vel_y = [-0.8,0.8]   # min max [m/s]
+            lin_vel_x = [-1.0,1.2] # min max [m/s]
+            lin_vel_y = [-0.6,0.6]   # min max [m/s]
             ang_vel_yaw = [-1.0, 1.0]    # min max [rad/s]
             heading = [-3.14, 3.14]
     class init_state:
@@ -96,7 +97,7 @@ class Titatit_Cfg(BaseConfig):
         }
 
     class control:
-        # Match the real ros2_control setup: 500 Hz low-level loop and 50 Hz policy.
+        # Match M20/ZG-M1 training: 200 Hz physics and 50 Hz policy.
         control_type = 'P'
         stiffness = {'hip': 60., 'thigh': 60., 'calf': 60., 'foot': 10.}  # [N*m/rad]
         damping = {'hip': 1.5, 'thigh': 1.5, 'calf': 1.5, 'foot': 0.5}     # [N*m*s/rad]
@@ -107,7 +108,7 @@ class Titatit_Cfg(BaseConfig):
             0.125, 0.25, 0.25, 0.25,
         ]
         vel_scale = 5.0
-        decimation = 10
+        decimation = 4
         torque_limits = [
             55.0, 55.0, 55.0, 10.0,
             55.0, 55.0, 55.0, 10.0,
@@ -128,7 +129,7 @@ class Titatit_Cfg(BaseConfig):
         self_collisions = 0 # 1 to disable, 0 to enable...bitwise filter
         replace_cylinder_with_capsule = False # replace collision cylinders with capsules, leads to faster/more stable simulation
         flip_visual_attachments = True # Some .obj meshes must be flipped from y-up to z-up
-        
+
         density = 0.001
         angular_damping = 0.
         linear_damping = 0.
@@ -162,7 +163,7 @@ class Titatit_Cfg(BaseConfig):
 
         add_cmd_action_latency = True
         randomize_cmd_action_latency = True
-        range_cmd_action_latency = [0, 3]
+        range_cmd_action_latency = [0, 3]  # Physics steps: 0-15 ms at sim.dt=0.005.
 
     class rewards:
         class scales:
@@ -180,6 +181,7 @@ class Titatit_Cfg(BaseConfig):
             # stumble = -0.1
             action_rate = -0.011
             stand_still=-0.5
+            wheel_action_stand = 0.0
             dof_pos_limits = -5.0
             hip_default = -0.5
             run_still=-0.05
@@ -220,7 +222,7 @@ class Titatit_Cfg(BaseConfig):
         lookat = [11., 5, 3.]  # [m]
 
     class sim:
-        dt =  0.002
+        dt =  0.005
         substeps = 1
         gravity = [0., 0. ,-9.81]  # [m/s^2]
         up_axis = 1  # 0 is y, 1 is z

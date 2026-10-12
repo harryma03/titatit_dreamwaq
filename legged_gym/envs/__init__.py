@@ -33,6 +33,9 @@ from .base.legged_robot import LeggedRobot
 from legged_gym.envs.M20.m20_config import M20_Cfg_Yu,M20_PPO_Yu
 from legged_gym.envs.M20.m20 import M20_Robot
 from legged_gym.envs.dynawheel.dynawheel_config import DynawheelCfg, DynawheelPPO
+from legged_gym.envs.dynawheel.dynawheel import DynawheelRobot
+from legged_gym.envs.zg_m1.zg_m1_config import ZGM1Cfg, ZGM1PPO
+from legged_gym.envs.zg_m1.zg_m1 import ZGM1Robot
 from legged_gym.envs.titatit.titatit_config import Titatit_Cfg, Titatit_PPO
 from legged_gym.envs.titatit.titatit import Titatit_Robot
 
@@ -48,5 +51,6 @@ from legged_gym.utils.task_registry import task_registry
 task_registry.register( "go2_legstand", Go2_legstand, GO2Cfg_Leggedstand(), GO2CfgPPO_Leggedstand())
 task_registry.register( "go2_handstand", Go2_stand, GO2Cfg_Handstand(), GO2CfgPPO_Handstand())
 task_registry.register( "m20", M20_Robot, M20_Cfg_Yu(), M20_PPO_Yu())
-task_registry.register("dynawheel", M20_Robot, DynawheelCfg(), DynawheelPPO())
+task_registry.register("dynawheel", DynawheelRobot, DynawheelCfg(), DynawheelPPO())
+task_registry.register("zg_m1", ZGM1Robot, ZGM1Cfg(), ZGM1PPO())
 task_registry.register( "titatit", Titatit_Robot, Titatit_Cfg(), Titatit_PPO())

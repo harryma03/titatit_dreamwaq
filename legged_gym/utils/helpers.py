@@ -355,48 +355,62 @@ def export_policy_as_dwaq(actor_critic, path):
     exporter.export(path)
 
 
-class PolicyExporterDWAQ_(torch.nn.Module):
+class PolicyExporterDWAQ(torch.nn.Module):
     def __init__(self, actor_critic):
         super().__init__()
         self.actor = copy.deepcopy(actor_critic.actor)
         self.vae = copy.deepcopy(actor_critic.vae)
         self.actor.eval()
-        self.vae.eval()          # 必须 eval 模式
+        self.vae.eval()
 
-    def forward(self, obs_history):
-        # 与训练时完全一致
-        (code,), *_ = self.vae.cenet_forward(obs_history[:, :-57])
-        actor_input = torch.cat((code.unsqueeze(0), obs_history[:, -57:]), dim=1)
-        actions_mean = self.actor(actor_input)
-        return actions_mean
+    def forward(self, observations):
+        # 兼容旧版实机 wheel_run.cpp 的输入顺序：
+        # [当前帧, t-1, t-2, t-3, t-4, t-5]
+        current_obs = observations[:, 0:57]
 
-    # ==========  改写为 ONNX  ==========
+        # 恢复为 VAE 训练时的顺序：
+        # [t-5, t-4, t-3, t-2, t-1]
+        obs_history = torch.cat(
+            (
+                observations[:, 285:342],
+                observations[:, 228:285],
+                observations[:, 171:228],
+                observations[:, 114:171],
+                observations[:, 57:114],
+            ),
+            dim=1,
+        )
+
+        _, _, _, latent = self.vae.cenet_forward(obs_history)
+        mean_vel, _, mean_latent, _ = latent
+
+        actor_input = torch.cat(
+            (mean_vel, mean_latent, current_obs),
+            dim=1,
+        )
+        return self.actor(actor_input)
+
     def export(self, path, opset=11):
         os.makedirs(path, exist_ok=True)
-        onnx_file = os.path.join(path, 'policy_dwaq.onnx')
+        onnx_file = os.path.join(path, "policy_dwaq.onnx")
 
-        # 1. 构造 dummy 输入（batch=1，长度与你训练时一致）
-        seq_len = 46*6             # 请改成你真实的 obs_history 总长度
-        dummy_obs = torch.randn(1, seq_len)
+        # 固定输入：[1, 342]
+        dummy_obs = torch.randn(1, 342)
 
-        # 2. 切换到 CPU、eval、无梯度
-        self.to('cpu')
+        self.to("cpu")
         self.eval()
+
         with torch.no_grad():
             torch.onnx.export(
-                self,                                    # 模型
-                (dummy_obs,),                            # 输入 tuple
+                self,
+                (dummy_obs,),
                 onnx_file,
-                input_names=['obs'],
-                output_names=['actions'],
-                dynamic_axes={                           # batch 维度可变
-                    'obs': {0: 'batch'},
-                    'actions': {0: 'batch'}
-                },
-                opset_version=opset
+                input_names=["obs"],
+                output_names=["actions"],
+                opset_version=opset,
             )
-        print(f'ONNX 模型已导出至: {onnx_file}')
 
+        print(f"ONNX 模型已导出至: {onnx_file}")
 
 def export_policy_as_dwaq_(actor_critic, path):
     exporter = PolicyExporterDWAQ_(actor_critic)

@@ -363,6 +363,8 @@ class Titatit_Robot(BaseTask):
             self.commands[env_ids, 2] = torch_rand_float(self.command_ranges["ang_vel_yaw"][0], self.command_ranges["ang_vel_yaw"][1], (len(env_ids), 1), device=self.device).squeeze(1)
 
         self.commands[env_ids, :2] *= (torch.norm(self.commands[env_ids, :2], dim=1) > 0.2).unsqueeze(1)
+        stand_env_ids = env_ids[torch.rand(len(env_ids), device=self.device) < self.cfg.commands.stand_ratio]
+        self.commands[stand_env_ids, :3] = 0.0
 
     def _cfg_to_dof_tensor(self, value, name):
         if isinstance(value, (float, int)):
@@ -937,7 +939,11 @@ class Titatit_Robot(BaseTask):
         # Penalize motion at zero commands        
         dof_err = self.dof_pos - self.default_dof_pos
         dof_err[:,self.wheel_indices] = 0
-        return torch.sum(torch.abs(dof_err), dim=1) * (torch.norm(self.commands[:, :2], dim=1) < 0.1)
+        return torch.sum(torch.abs(dof_err), dim=1) * (torch.norm(self.commands[:, :3], dim=1) < 0.1)
+
+    def _reward_wheel_action_stand(self):
+        stand = torch.norm(self.commands[:, :3], dim=1) < 0.1
+        return torch.sum(torch.square(self.actions[:, self.wheel_indices]), dim=1) * stand
 
     def _reward_feet_contact_forces(self):
         # penalize high contact forces
@@ -954,5 +960,5 @@ class Titatit_Robot(BaseTask):
         # Penalize motion at running commands        
         dof_err = self.dof_pos - self.default_dof_pos
         dof_err[:,self.wheel_indices] = 0
-        return torch.sum(torch.abs(dof_err), dim=1) * (torch.norm(self.commands[:, :2], dim=1) > 0.1)
+        return torch.sum(torch.abs(dof_err), dim=1) * (torch.norm(self.commands[:, :3], dim=1) > 0.1)
     

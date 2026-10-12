@@ -48,6 +48,7 @@ from torch.onnx import OnnxExporterError
 import numpy as np
 import torch
 import pickle
+import pygame
 
 
 def play(args):
@@ -61,6 +62,8 @@ def play(args):
     env_cfg.terrain.num_rows = 5
     env_cfg.terrain.num_cols = 5
     env_cfg.terrain.curriculum = False
+    if hasattr(env_cfg.commands, "emphase"):
+        env_cfg.commands.emphase.enable = False
     if args.play_terrain_level is not None:
         env_cfg.terrain.num_rows = max(train_terrain_num_rows, args.play_terrain_level + 1)
         env_cfg.terrain.curriculum = True
@@ -76,6 +79,18 @@ def play(args):
     train_cfg.runner.resume = True
     ppo_runner, train_cfg = task_registry.make_alg_runner(env=env, name=args.task, args=args, train_cfg=train_cfg)
     policy = ppo_runner.get_inference_policy(device=env.device)
+
+    pygame.init()
+    pygame.joystick.init()
+    if pygame.joystick.get_count() == 0:
+        raise RuntimeError("No joystick detected. Connect the PS2 controller before starting play.py")
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+    print(f"Joystick: {joystick.get_name()} ({joystick.get_numaxes()} axes)")
+    command = torch.zeros(3, device=env.device)
+
+    def deadzone(value, threshold=0.10):
+        return 0.0 if abs(value) < threshold else value
     
     # export policy as a jit module (used to run it from C++)
     if EXPORT_POLICY:
@@ -97,9 +112,14 @@ def play(args):
     img_idx = 0
 
     for i in range(10*int(env.max_episode_length)):
-        env.commands[:, 0]=1.0
-        env.commands[:, 1]=0.
-        env.commands[:, 2]=0.
+        pygame.event.pump()
+        target_command = torch.tensor([
+            -deadzone(joystick.get_axis(1)) * 1.0,
+            -deadzone(joystick.get_axis(0)) * 0.6,
+            -deadzone(joystick.get_axis(3)) * 1.0,
+        ], device=env.device)
+        command += 0.15 * (target_command - command)
+        env.commands[:, :3] = command
         actions = policy(obs.detach(),obs_hist.detach())
         obs, _,  obs_hist,_, rews, dones, infos = env.step(actions.detach())
         if RECORD_FRAMES:

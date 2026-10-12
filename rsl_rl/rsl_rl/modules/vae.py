@@ -8,7 +8,7 @@ class VAE(nn.Module):
                 cenet_in_dim, #vae的输入维度
                 num_latent_dim, #隐变量的维度
                 num_est_dims, #显式估计的变量的维度
-                num_decode_dims=45, #解码器的输出维度
+                num_decode_dims=45, #解码器的输出维度 四足45,四轮足57
                 activation="elu", 
                 **kwargs):
         if kwargs:
