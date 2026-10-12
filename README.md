@@ -47,7 +47,7 @@ python -m pip install -e .
 ## 更新代码
 git status
 git add .
-git commit -m "Update wrap"
+git commit -m "Update titatit"
 git push origin main
 
 ## Use
