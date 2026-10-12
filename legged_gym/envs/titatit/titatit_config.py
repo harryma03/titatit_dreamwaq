@@ -28,7 +28,7 @@ class Titatit_Cfg(BaseConfig):
         measured_points_y = [-0.5, -0.4, -0.3, -0.2, -0.1, 0., 0.1, 0.2, 0.3, 0.4, 0.5]
         selected = False # select a unique terrain type and pass all arguments
         terrain_kwargs = None # Dict of arguments for selected terrain
-        max_init_terrain_level = 7 # starting curriculum state
+        max_init_terrain_level = 5 # Match ZG-M1's initial curriculum difficulty.
         terrain_length = 8.
         terrain_width = 8.
         num_rows= 10 # number of terrain rows (levels)
@@ -121,7 +121,7 @@ class Titatit_Cfg(BaseConfig):
         foot_name = "foot"
         wheel_name = ["foot"]
         penalize_contacts_on = ["thigh", "calf"]
-        terminate_after_contacts_on = []
+        terminate_after_contacts_on = ["base", "trunk"] # Fixed-joint merging may retain the root name.
         disable_gravity = False
         collapse_fixed_joints = True # merge bodies connected by fixed joints. Specific fixed joints can be kept by adding " <... dont_collapse="true">
         fix_base_link = False # fixe the base of the robot
@@ -190,8 +190,8 @@ class Titatit_Cfg(BaseConfig):
         soft_dof_pos_limit = 0.9 # percentage of urdf limits, values above this limit are penalized
         soft_dof_vel_limit = 0.9
         soft_torque_limit = 0.9
-        base_height_target = 0.44
-        base_contact_threshold = 0.05
+        base_height_target = 0.40
+        base_contact_threshold = 0.25
         max_contact_force = 200. # forces above this value are penalized
 
     class normalization:
