@@ -46,6 +46,23 @@ class ZGM1Cfg(LeggedRobotCfg):
             "RBL_HIP_JOINT": -0.8,
             "RBL_KNEE_JOINT": 1.5,
             "RBL_FOOT_JOINT": 0.0,
+            
+            # "FAR_ABAD_JOINT": 0.0,
+            # "FAR_HIP_JOINT": 0.54,
+            # "FAR_KNEE_JOINT": -1.05,
+            # "FAR_FOOT_JOINT": 0.0,
+            # "FBL_ABAD_JOINT": 0.0,
+            # "FBL_HIP_JOINT": 0.54,
+            # "FBL_KNEE_JOINT": -1.05,
+            # "FBL_FOOT_JOINT": 0.0,
+            # "RAR_ABAD_JOINT": 0.0,
+            # "RAR_HIP_JOINT": -0.54,
+            # "RAR_KNEE_JOINT": 1.05,
+            # "RAR_FOOT_JOINT": 0.0,
+            # "RBL_ABAD_JOINT": 0.0,
+            # "RBL_HIP_JOINT": -0.54,
+            # "RBL_KNEE_JOINT": 1.05,
+            # "RBL_FOOT_JOINT": 0.0,
         }
 
     class control(LeggedRobotCfg.control):
@@ -99,9 +116,9 @@ class ZGM1Cfg(LeggedRobotCfg):
             tracking_lin_vel = 3.0 # 惩罚当前机器人在X、Y方向速度与命令不一致
             tracking_ang_vel = 1.5 # 惩罚当前机器人在角度转向速度与命令不一致
             lin_vel_z = -2.0 # 惩罚机器人在Z轴上的速度 对应现象为机器人上下起伏很大
-            ang_vel_xy = -0.05 # 惩罚机器人在X轴和Y轴上的角速度 对应现象为遏制机器人左右晃动和前后晃动
-            orientation = -0.5 # 强烈鼓励机器人与初始姿态的基座方向一致
-            base_height=-10.0
+            ang_vel_xy = -0.15 # 惩罚机器人在X轴和Y轴上的角速度 对应现象为遏制机器人左右晃动和前后晃动
+            orientation = -1.0 # 强烈鼓励机器人与初始姿态的基座方向一致
+            base_height=-20.0
             torques = -0.000005#
             dof_vel = -1e-6
             dof_acc = -1e-7

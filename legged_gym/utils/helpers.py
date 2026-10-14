@@ -360,26 +360,22 @@ class PolicyExporterDWAQ(torch.nn.Module):
         super().__init__()
         self.actor = copy.deepcopy(actor_critic.actor)
         self.vae = copy.deepcopy(actor_critic.vae)
+        self.obs_dim = self.actor[0].in_features - 19
+        self.history_steps = self.vae.encoder[0].in_features // self.obs_dim
+        if self.vae.encoder[0].in_features != self.obs_dim * self.history_steps:
+            raise ValueError("DreamWaQ history and one-step observation dimensions differ")
         self.actor.eval()
         self.vae.eval()
 
     def forward(self, observations):
-        # 兼容旧版实机 wheel_run.cpp 的输入顺序：
-        # [当前帧, t-1, t-2, t-3, t-4, t-5]
-        current_obs = observations[:, 0:57]
+        # DDW wheel_run order: current frame, then history newest to oldest.
+        current_obs = observations[:, :self.obs_dim]
 
-        # 恢复为 VAE 训练时的顺序：
-        # [t-5, t-4, t-3, t-2, t-1]
-        obs_history = torch.cat(
-            (
-                observations[:, 285:342],
-                observations[:, 228:285],
-                observations[:, 171:228],
-                observations[:, 114:171],
-                observations[:, 57:114],
-            ),
-            dim=1,
-        )
+        # Restore VAE training order: oldest to newest.
+        obs_history = torch.cat(tuple(
+            observations[:, i * self.obs_dim:(i + 1) * self.obs_dim]
+            for i in range(self.history_steps, 0, -1)
+        ), dim=1)
 
         _, _, _, latent = self.vae.cenet_forward(obs_history)
         mean_vel, _, mean_latent, _ = latent
@@ -394,8 +390,8 @@ class PolicyExporterDWAQ(torch.nn.Module):
         os.makedirs(path, exist_ok=True)
         onnx_file = os.path.join(path, "policy_dwaq.onnx")
 
-        # 固定输入：[1, 342]
-        dummy_obs = torch.randn(1, 342)
+        # 57*6 for the original policy, 59*6 for the phase policy.
+        dummy_obs = torch.randn(1, self.obs_dim * (self.history_steps + 1))
 
         self.to("cpu")
         self.eval()
