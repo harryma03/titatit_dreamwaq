@@ -38,6 +38,8 @@ from legged_gym.envs.zg_m1.zg_m1_config import ZGM1Cfg, ZGM1PPO
 from legged_gym.envs.zg_m1.zg_m1 import ZGM1Robot
 from legged_gym.envs.zg_m1.zg_m1_phase import ZGM1PhaseRobot
 from legged_gym.envs.zg_m1.zg_m1_phase_config import ZGM1PhaseCfg, ZGM1PhasePPO
+from legged_gym.envs.fdwheel.fdwheel_config import FDWheelCfg, FDWheelPPO
+from legged_gym.envs.fdwheel.fdwheel import FDWheelRobot
 from legged_gym.envs.titatit.titatit_config import Titatit_Cfg, Titatit_PPO
 from legged_gym.envs.titatit.titatit import Titatit_Robot
 
@@ -56,4 +58,5 @@ task_registry.register( "m20", M20_Robot, M20_Cfg_Yu(), M20_PPO_Yu())
 task_registry.register("dynawheel", DynawheelRobot, DynawheelCfg(), DynawheelPPO())
 task_registry.register("zg_m1", ZGM1Robot, ZGM1Cfg(), ZGM1PPO())
 task_registry.register("zg_m1_phase", ZGM1PhaseRobot, ZGM1PhaseCfg(), ZGM1PhasePPO())
+task_registry.register("fdwheel", FDWheelRobot, FDWheelCfg(), FDWheelPPO())
 task_registry.register( "titatit", Titatit_Robot, Titatit_Cfg(), Titatit_PPO())

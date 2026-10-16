@@ -114,8 +114,8 @@ def play(args):
     for i in range(10*int(env.max_episode_length)):
         pygame.event.pump()
         target_command = torch.tensor([
-            -deadzone(joystick.get_axis(1)) * 1.0,
-            -deadzone(joystick.get_axis(0)) * 0.6,
+            -deadzone(joystick.get_axis(1)) * 1.5,
+            -deadzone(joystick.get_axis(0)) * 1.0,
             -deadzone(joystick.get_axis(3)) * 1.0,
         ], device=env.device)
         command += 0.15 * (target_command - command)
