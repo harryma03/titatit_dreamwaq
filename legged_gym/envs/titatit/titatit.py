@@ -509,6 +509,9 @@ class Titatit_Robot(BaseTask):
         actor_root_state = self.gym.acquire_actor_root_state_tensor(self.sim)
         dof_state_tensor = self.gym.acquire_dof_state_tensor(self.sim)
         net_contact_forces = self.gym.acquire_net_contact_force_tensor(self.sim)
+        rigid_body_state = self.gym.acquire_rigid_body_state_tensor(self.sim)
+        self.gym.refresh_rigid_body_state_tensor(self.sim)
+        self.rigid_body_state = gymtorch.wrap_tensor(rigid_body_state)
         self.gym.refresh_dof_state_tensor(self.sim)
         self.gym.refresh_actor_root_state_tensor(self.sim)
         self.gym.refresh_net_contact_force_tensor(self.sim)
@@ -900,6 +903,22 @@ class Titatit_Robot(BaseTask):
         '''Penalize action smoothness'''
         action_smoothness_cost = torch.sum(torch.square(self.actions - 2*self.last_actions + self.last_last_actions), dim=-1)
         return action_smoothness_cost
+
+    def _reward_wheel_lateral_slip(self):
+        """Contact-gated wheel-center side velocity; a horizontal slip proxy."""
+        wheels = self.rigid_body_state.view(self.num_envs, self.num_bodies, 13)[:, self.feet_indices]
+        # TITATIT foot joints rotate about local Y; wheel spin preserves this axis.
+        local_axis = torch.zeros_like(wheels[:, :, 7:10])
+        local_axis[:, :, 1] = 1.0
+        axis_world = quat_apply(wheels[:, :, 3:7].reshape(-1, 4), local_axis.reshape(-1, 3))
+        axis_xy = axis_world.view(self.num_envs, len(self.feet_indices), 3)[:, :, :2]
+        axis_xy = axis_xy / torch.norm(axis_xy, dim=-1, keepdim=True).clamp(min=1e-6)
+        lateral_velocity = torch.sum(wheels[:, :, 7:9] * axis_xy, dim=-1)
+        contact = torch.norm(self.contact_forces[:, self.feet_indices], dim=-1) > 1.0
+        lateral_gain = torch.abs(self.commands[:, 1]) / self.cfg.rewards.wheel_lateral_slip_lateral_full
+        yaw_gain = torch.abs(self.commands[:, 2]) / self.cfg.rewards.wheel_lateral_slip_yaw_full
+        gain = torch.maximum(lateral_gain, yaw_gain).clamp(max=1.0)
+        return gain * torch.sum(torch.square(lateral_velocity) * contact, dim=1)
 
     def _reward_collision(self):
         # Penalize collisions on selected bodies

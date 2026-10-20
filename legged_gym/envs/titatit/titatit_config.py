@@ -170,20 +170,21 @@ class Titatit_Cfg(BaseConfig):
             termination = -0.8 # 25/8/23 zsy说不用加
             tracking_lin_vel = 3.0 # 惩罚当前机器人在X、Y方向速度与命令不一致
             tracking_ang_vel = 1.5 # 惩罚当前机器人在角度转向速度与命令不一致
-            lin_vel_z = -2 # 惩罚机器人在Z轴上的速度 对应现象为机器人上下起伏很大
-            ang_vel_xy = -0.05 # 惩罚机器人在X轴和Y轴上的角速度 对应现象为遏制机器人左右晃动和前后晃动
-            orientation = -0.5 # 强烈鼓励机器人与初始姿态的基座方向一致
-            base_height=-10.0
+            lin_vel_z = -2.0 # 惩罚机器人在Z轴上的速度 对应现象为机器人上下起伏很大
+            ang_vel_xy = -0.15 # 惩罚机器人在X轴和Y轴上的角速度 对应现象为遏制机器人左右晃动和前后晃动
+            orientation = -1.0 # 强烈鼓励机器人与初始姿态的基座方向一致
+            base_height=-20.0
             torques = -0.000005#
             dof_vel = -1e-6
             dof_acc = -1e-7
             collision = -1.
             # stumble = -0.1
             action_rate = -0.011
+            action_smoothness = -0.002
+            wheel_lateral_slip = -0.2
             stand_still=-0.5
-            wheel_action_stand = 0.0
             dof_pos_limits = -5.0
-            hip_default = -0.5
+            hip_default = -1.0
             run_still=-0.05
         only_positive_rewards = True # if true negative total rewards are clipped at zero (avoids early termination problems)
         tracking_sigma = 0.25 # tracking reward = exp(-error^2/sigma)
@@ -191,8 +192,10 @@ class Titatit_Cfg(BaseConfig):
         soft_dof_vel_limit = 0.9
         soft_torque_limit = 0.9
         base_height_target = 0.40
-        base_contact_threshold = 0.25
-        max_contact_force = 200. # forces above this value are penalized
+        # Smoothly activate side-slip cost for lateral/turn commands (m/s, rad/s).
+        wheel_lateral_slip_lateral_full = 0.3
+        wheel_lateral_slip_yaw_full = 0.5
+        max_contact_force = 150. # forces above this value are penalized
 
     class normalization:
         class obs_scales:
