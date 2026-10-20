@@ -47,7 +47,7 @@ python -m pip install -e .
 ## 更新代码
 git status
 git add .
-git commit -m "Update titatit"
+git commit -m "Update litewheel"
 git push origin main
 
 

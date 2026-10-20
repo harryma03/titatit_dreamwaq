@@ -96,9 +96,11 @@ class FDWheelCfg(LeggedRobotCfg):
             collision = -1.
             # stumble = -0.1
             action_rate = -0.011
+            action_smoothness = -0.002
+            wheel_lateral_slip = -0.2
             stand_still=-0.5
             dof_pos_limits = -5.0
-            hip_default = -0.5
+            hip_default = -1.0
             run_still=-0.05
         only_positive_rewards = True # if true negative total rewards are clipped at zero (avoids early termination problems)
         tracking_sigma = 0.25 # tracking reward = exp(-error^2/sigma)
@@ -106,6 +108,9 @@ class FDWheelCfg(LeggedRobotCfg):
         soft_dof_vel_limit = 0.9
         soft_torque_limit = 0.9
         base_height_target = 0.50
+        # Smoothly activate side-slip cost for lateral/turn commands (m/s, rad/s).
+        wheel_lateral_slip_lateral_full = 0.3
+        wheel_lateral_slip_yaw_full = 0.5
         max_contact_force = 150. # forces above this value are penalized
     class normalization(LeggedRobotCfg.normalization):
         clip_actions = 100.0

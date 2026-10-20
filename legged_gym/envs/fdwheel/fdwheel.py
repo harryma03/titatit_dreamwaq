@@ -299,6 +299,22 @@ class FDWheelRobot(LeggedRobot):
         delta = self.actions - 2.0 * self.last_actions + self.slast_actions
         return torch.sum(torch.square(delta), dim=1)
 
+    def _reward_wheel_lateral_slip(self):
+        """Contact-gated wheel-center side velocity; a horizontal slip proxy."""
+        wheels = self.rigid_body_state.view(self.num_envs, self.num_bodies, 13)[:, self.feet_indices]
+        # Litewheel URDF wheel axes are local +/-Y, unchanged by wheel spin.
+        local_axis = torch.zeros_like(wheels[:, :, 7:10])
+        local_axis[:, :, 1] = 1.0
+        axis_world = quat_apply(wheels[:, :, 3:7].reshape(-1, 4), local_axis.reshape(-1, 3))
+        axis_xy = axis_world.view(self.num_envs, 4, 3)[:, :, :2]
+        axis_xy = axis_xy / torch.norm(axis_xy, dim=-1, keepdim=True).clamp(min=1e-6)
+        lateral_velocity = torch.sum(wheels[:, :, 7:9] * axis_xy, dim=-1)
+        contact = torch.norm(self.contact_forces[:, self.feet_indices], dim=-1) > 1.0
+        lateral_gain = torch.abs(self.commands[:, 1]) / self.cfg.rewards.wheel_lateral_slip_lateral_full
+        yaw_gain = torch.abs(self.commands[:, 2]) / self.cfg.rewards.wheel_lateral_slip_yaw_full
+        gain = torch.maximum(lateral_gain, yaw_gain).clamp(max=1.0)
+        return gain * torch.sum(torch.square(lateral_velocity) * contact, dim=1)
+
 
     def _reward_dof_acc(self):
         acceleration = (self.last_dof_vel - self.dof_vel) / self.dt
