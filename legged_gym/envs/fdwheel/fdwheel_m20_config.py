@@ -1,6 +1,7 @@
 """M20-inspired Isaac Gym task with the Litewheel robot asset.
 
 Isaac Lab reward terms are adapted to this project's Isaac Gym interface.
+Reference: DeepRoboticsLab/rl_training commit 3d05d3b97f7a2390f003547f23a02b3b42eea195.
 """
 
 from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobotCfgPPO
@@ -21,7 +22,9 @@ class FDWheelM20Cfg(LeggedRobotCfg):
         terrain_proportions = [0.1, 0.1, 0.3, 0.3, 0.1]
 
     class commands(LeggedRobotCfg.commands):
-        heading_command = False
+        heading_command = True
+        heading_control_stiffness = 0.5
+        # Ordinary motion tracks a heading; the pure-yaw group retains direct yaw velocity.
         zero_command_fraction = 0.2
         pure_yaw_fraction = 0.2
         pure_lateral_fraction = 0.02
@@ -98,7 +101,7 @@ class FDWheelM20Cfg(LeggedRobotCfg):
             collision = -1.0
             contact_forces = -1.5e-4
             action_rate = -0.01
-            action_smoothness = -0.005
+            action_smoothness = -0.025
             stand_still = -1.0
             hip_default = -3.0
             hfe_default = -1.5
@@ -107,22 +110,27 @@ class FDWheelM20Cfg(LeggedRobotCfg):
             rotation_air_time = 50.0
             rotation_slip = -2.0
             rotation_gait = 2.0
-            rotation_symmetry = 1.0
+            rotation_symmetry = 1.0  # Conservative Litewheel adaptation; official M20 uses 15.
             bad_orientation = -50.0  # With dt=0.02, a tilted terminal step costs 1.0.
 
         only_positive_rewards = False
         tracking_sigma = 0.25
         base_height_target = 0.40
+        gait_level_full_terrain = 3.0
         rotation_cmd_threshold = 0.1
         rotation_lin_threshold = 0.1
-        rotation_lift_height = 0.04
+        rotation_gait_lin_threshold = 0.5
+        rotation_gait_ang_threshold = 0.05
+        rotation_lift_height = 0.05
         rotation_contact_threshold = 1.0
         rotation_air_time_threshold = 0.2
-        rotation_air_time_reward_cap = 0.2
-        rotation_duty_time = 1.0
+        rotation_air_clearance = 0.0
+        rotation_air_time_reward_cap = 0.2  # Retain a positive cap; short swings still cost reward.
+        rotation_duty_time = 5.0
+        rotation_target_duty = 0.5
+        rotation_duty_std = 0.2
         bad_orientation_gravity_z = -0.5  # Terminate beyond 60 degrees of tilt.
-        wheel_lateral_slip_lateral_full = 0.3
-        wheel_lateral_slip_yaw_full = 0.5
+        joint_stand_still_scale = 5.0
         high_terrain_threshold = 0.06
         high_terrain_penalty_scale = 0.1
         max_contact_force = 150.0
