@@ -43,18 +43,19 @@ python -m pip install -e .
 
 ![m20](m20_deploy.gif)
 
-
 ## 更新代码
+
 git status
 git add .
-git commit -m "Update litewheel"
+git commit -m "Update litewheel config"
 git push origin main
 
-
 ## sim2sim更换网络
+
  cp /home/yons/harryma/titatit_dreamwaq-main/logs/zg_m1/exported/policies/policy_dwaq.onnx /home/yons/harryma/titatit_dreamwaq-main/ddw_legged_rl/src/robot_controller/controller_drl/lib/policy/wheel_run/config_zg_m1/wheel_run.onnx
 
- ## 检查sim2sim跟最新训练的网络是否一致
+## 检查sim2sim跟最新训练的网络是否一致
+
  sha256sum /home/yons/harryma/titatit_dreamwaq-main/logs/zg_m1/exported/policies/policy_dwaq.onnx /home/yons/harryma/titatit_dreamwaq-main/ddw_legged_rl/install/controller_drl/share/policy/zg_m1/wheel_run/wheel_run.onnx
 
 ## Use
