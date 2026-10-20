@@ -110,7 +110,7 @@ class FDWheelM20Cfg(LeggedRobotCfg):
             rotation_air_time = 50.0
             rotation_slip = -2.0
             rotation_gait = 2.0
-            rotation_symmetry = 1.0  # Conservative Litewheel adaptation; official M20 uses 15.
+            rotation_symmetry = 15.0
             bad_orientation = -50.0  # With dt=0.02, a tilted terminal step costs 1.0.
 
         only_positive_rewards = False
@@ -125,7 +125,6 @@ class FDWheelM20Cfg(LeggedRobotCfg):
         rotation_contact_threshold = 1.0
         rotation_air_time_threshold = 0.2
         rotation_air_clearance = 0.0
-        rotation_air_time_reward_cap = 0.2  # Retain a positive cap; short swings still cost reward.
         rotation_duty_time = 5.0
         rotation_target_duty = 0.5
         rotation_duty_std = 0.2

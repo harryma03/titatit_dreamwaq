@@ -112,21 +112,24 @@ def main():
     torch.manual_seed(13)
     robot = make_robot()
     robot._update_rotation_state()
-    assert not robot._reward_rotation_symmetry().any(), "standing must not earn symmetry at reset"
+    assert robot.cfg.rewards.scales.rotation_symmetry == 15.0
+    assert torch.all(robot._reward_rotation_symmetry() < 1e-6), "full contact has negligible duty reward"
 
     for _ in range(130):
         set_support(robot, [])
         robot._update_rotation_state()
         set_support(robot, [0, 1, 2, 3])
         robot._update_rotation_state()
-    assert not robot._reward_rotation_symmetry().any(), "synchronous hopping is not diagonal alternation"
+    assert torch.allclose(robot._reward_rotation_symmetry(), torch.ones(4)), (
+        "official duty reward alone cannot distinguish synchronous hopping from alternation")
     robot = make_robot()
     robot._update_rotation_state()
     set_support(robot, [0, 3])
     for _ in range(125):
         robot._update_rotation_state()
     assert torch.all(robot._reward_rotation_gait() == 1)
-    assert not robot._reward_rotation_symmetry().any(), "one fixed diagonal is not alternation"
+    assert torch.all(robot._reward_rotation_symmetry() < 1e-4), "fixed diagonal has poor duty balance"
+    assert torch.all(robot._reward_rotation_symmetry() > 0), "no extra alternation gate"
     set_support(robot, [1, 2])
     robot._update_rotation_state()
     assert torch.all(robot._reward_rotation_symmetry() > 0)
@@ -146,7 +149,7 @@ def main():
     robot.commands[:, :3] = torch.tensor([0., 0., -1.])
     for _ in range(robot.rotation_history_size):
         robot._update_rotation_state()
-    assert not robot._reward_rotation_symmetry().any(), "old diagonal patterns must expire"
+    assert torch.all(robot._reward_rotation_symmetry() < 1e-4), "full-contact history has poor duty balance"
 
     # Restore the short-swing negative term and reject startup/contact-only rewards.
     robot = make_robot()
@@ -163,7 +166,8 @@ def main():
     robot.rotation_max_air_height[:] = 0.16
     robot.rotation_last_contact[:] = False
     robot._update_rotation_state()
-    assert torch.allclose(robot._reward_rotation_air_time(), torch.full((4,), 0.8))
+    assert torch.allclose(robot._reward_rotation_air_time(), torch.full((4,), 39.2)), (
+        "official touchdown reward has no extra positive cap")
     robot.rotation_air_time[:] = 1.0
     robot.reset_idx(torch.tensor([1, 3]))
     assert not robot.rotation_air_time[[1, 3]].any()
@@ -274,7 +278,7 @@ def main():
     robot._post_physics_step_callback()
     assert torch.allclose(robot.commands[:, :3], torch.tensor([0.3, -0.2, -0.7]).expand(4096, 3))
     print("PASS: heading/direct-yaw/zero groups, play command preservation, terrain progression and gait scaling,")
-    print("      signed bounded touchdown, five-second symmetry and anti-hopping, reset isolation, body-frame slip,")
+    print("      signed uncapped touchdown, five-second duty symmetry, reset isolation, body-frame slip,")
     print("      posture norms, leg/wheel separation, smoothness warmup and tilt termination (CPU tensors only).")
 
 

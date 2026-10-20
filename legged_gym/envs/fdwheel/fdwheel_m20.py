@@ -15,9 +15,6 @@ class FDWheelM20Robot(FDWheelRobot):
         self.rotation_contact_history = torch.zeros(
             self.num_envs, 4, self.rotation_history_size, dtype=torch.bool, device=self.device)
         self.rotation_contact_sum = torch.zeros(self.num_envs, 4, device=self.device)
-        self.rotation_diagonal_history = torch.zeros(
-            self.num_envs, 2, self.rotation_history_size, dtype=torch.bool, device=self.device)
-        self.rotation_diagonal_sum = torch.zeros(self.num_envs, 2, device=self.device)
         self.rotation_contact_samples = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.rotation_history_index = 0
         self.rotation_air_time = torch.zeros(self.num_envs, 4, device=self.device)
@@ -45,8 +42,6 @@ class FDWheelM20Robot(FDWheelRobot):
         if len(env_ids):
             self.rotation_contact_history[env_ids] = False
             self.rotation_contact_sum[env_ids] = 0.0
-            self.rotation_diagonal_history[env_ids] = False
-            self.rotation_diagonal_sum[env_ids] = 0.0
             self.rotation_contact_samples[env_ids] = 0
             self.rotation_air_time[env_ids] = 0.0
             self.rotation_ground_height[env_ids] = 0.0
@@ -148,10 +143,6 @@ class FDWheelM20Robot(FDWheelRobot):
         old_contact = self.rotation_contact_history[:, :, self.rotation_history_index].float()
         self.rotation_contact_sum += contact.float() - old_contact
         self.rotation_contact_history[:, :, self.rotation_history_index] = contact
-        patterns = self._rotation_diagonals()
-        self.rotation_diagonal_sum += (
-            patterns.float() - self.rotation_diagonal_history[:, :, self.rotation_history_index].float())
-        self.rotation_diagonal_history[:, :, self.rotation_history_index] = patterns
         self.rotation_history_index = (self.rotation_history_index + 1) % self.rotation_history_size
         self.rotation_contact_samples = (self.rotation_contact_samples + 1).clamp(max=self.rotation_history_size)
 
@@ -161,8 +152,7 @@ class FDWheelM20Robot(FDWheelRobot):
         cleared = ((self.rotation_max_air_height - self.rotation_ground_height > self.cfg.rewards.rotation_air_clearance)
                    & self.rotation_has_ground)
         touchdown = contact & ~self.rotation_last_contact
-        earned = (self.rotation_air_time - self.cfg.rewards.rotation_air_time_threshold).clamp(
-            max=self.cfg.rewards.rotation_air_time_reward_cap)
+        earned = self.rotation_air_time - self.cfg.rewards.rotation_air_time_threshold
         self.rotation_air_reward = (earned * touchdown * cleared).sum(dim=1)
         self.rotation_air_time = torch.where(contact, 0.0, self.rotation_air_time + self.dt)
         self.rotation_ground_height = torch.where(contact, wheel_z, self.rotation_ground_height)
@@ -214,9 +204,7 @@ class FDWheelM20Robot(FDWheelRobot):
         error = (a - self.cfg.rewards.rotation_target_duty).square() + (b - self.cfg.rewards.rotation_target_duty).square()
         reward = torch.exp(-error / self.cfg.rewards.rotation_duty_std**2)
         warmup = self.rotation_contact_samples / self.rotation_history_size
-        # Preserve the anti-hopping guard, but check the window rather than forcing a current lift.
-        alternated = (self.rotation_diagonal_sum > 0).all(dim=1)
-        return reward * warmup * alternated * self._rotation_gait_gate() * self.gait_level
+        return reward * warmup * self._rotation_gait_gate() * self.gait_level
 
     def _reward_action_rate(self):
         return super()._reward_action_rate() * self.gait_level
