@@ -236,15 +236,48 @@ class FDWheelM20Robot(FDWheelRobot):
     def _reward_hip_default(self):
         return self._joint_position_error(self.haa_indices)
 
+    # def _joint_default_penalty(self, indices):
+    #     error = self._joint_position_error(indices)
+    #     pure_side = ((self.commands[:, 1].abs() > 0.1)
+    #                  & (torch.norm(self.commands[:, [0, 2]], dim=1) < 0.1))
+    #     mean_height = self.measured_heights[:, self.base_height_index] - self.env_origins[:, 2]
+    #     terrain_scale = torch.where(mean_height > self.cfg.rewards.high_terrain_threshold,
+    #                                 self.cfg.rewards.high_terrain_penalty_scale, 1.0)
+    #     active = ~(self._pure_turn().bool() | pure_side)
+    #     return error * active * terrain_scale
+
     def _joint_default_penalty(self, indices):
         error = self._joint_position_error(indices)
-        pure_side = ((self.commands[:, 1].abs() > 0.1)
-                     & (torch.norm(self.commands[:, [0, 2]], dim=1) < 0.1))
-        mean_height = self.measured_heights[:, self.base_height_index] - self.env_origins[:, 2]
-        terrain_scale = torch.where(mean_height > self.cfg.rewards.high_terrain_threshold,
-                                    self.cfg.rewards.high_terrain_penalty_scale, 1.0)
-        active = ~(self._pure_turn().bool() | pure_side)
-        return error * active * terrain_scale
+
+        pure_side = (
+            (self.commands[:, 1].abs() > 0.1)
+            & (
+                torch.norm(
+                    self.commands[:, [0, 2]], dim=1
+                ) < 0.1
+            )
+        )
+
+        mean_height = (
+            self.measured_heights[:, self.base_height_index]
+            - self.env_origins[:, 2]
+        )
+
+        terrain_scale = torch.where(
+            mean_height > self.cfg.rewards.high_terrain_threshold,
+            self.cfg.rewards.high_terrain_penalty_scale,
+            1.0,
+        )
+
+        special_motion = self._pure_turn().bool() | pure_side
+
+        penalty_scale = torch.where(
+            special_motion,
+            torch.full_like(error, 0.2),
+            torch.ones_like(error),
+        )
+
+        return error * penalty_scale * terrain_scale
 
     def _reward_hfe_default(self):
         return self._joint_default_penalty(self.hfe_indices)

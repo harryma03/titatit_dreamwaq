@@ -92,6 +92,9 @@ class FDWheelM20Cfg(LeggedRobotCfg):
         class scales:
             tracking_lin_vel = 5.0
             tracking_ang_vel = 3.0
+            # 机身高度约束
+            base_height = -1.5
+            
             lin_vel_z = -2.0
             ang_vel_xy = -0.02
             orientation = -50.0
@@ -100,17 +103,22 @@ class FDWheelM20Cfg(LeggedRobotCfg):
             wheel_acc = -1e-7
             collision = -1.0
             contact_forces = -1.5e-4
-            action_rate = -0.01
+            action_rate = -0.025
             action_smoothness = -0.025
             stand_still = -1.0
+            # 保留现有腿部位置惩罚
             hip_default = -3.0
             hfe_default = -1.5
             kfe_default = -0.75
+            
             joint_mirror = -0.03
-            rotation_air_time = 50.0
+            
+            # 转向专项奖励
+            rotation_air_time = 0.0
             rotation_slip = -2.0
             rotation_gait = 2.0
             rotation_symmetry = 15.0
+            
             bad_orientation = -50.0  # With dt=0.02, a tilted terminal step costs 1.0.
 
         only_positive_rewards = False

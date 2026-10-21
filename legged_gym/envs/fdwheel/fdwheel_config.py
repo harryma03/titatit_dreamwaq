@@ -28,12 +28,20 @@ class FDWheelCfg(LeggedRobotCfg):
             heading = [-3.14, 3.14]
 
     class init_state(LeggedRobotCfg.init_state):
-        pos = [0.0, 0.0, 0.55]
+        pos = [0.0, 0.0, 0.60]
         default_joint_angles = {
-            "LF_HAA": 0.0, "LF_HFE": 0.7, "LF_KFE": -1.35, "LF_WHEEL_MOTOR": 0.0,
-            "LH_HAA": 0.0, "LH_HFE": -0.7, "LH_KFE": 1.35, "LH_WHEEL_MOTOR": 0.0,
-            "RF_HAA": 0.0, "RF_HFE": 0.7, "RF_KFE": -1.35, "RF_WHEEL_MOTOR": 0.0,
-            "RH_HAA": 0.0, "RH_HFE": -0.7, "RH_KFE": 1.35, "RH_WHEEL_MOTOR": 0.0,
+            # #机身50
+            # "LF_HAA": 0.0, "LF_HFE": 0.7, "LF_KFE": -1.35, "LF_WHEEL_MOTOR": 0.0,
+            # "LH_HAA": 0.0, "LH_HFE": -0.7, "LH_KFE": 1.35, "LH_WHEEL_MOTOR": 0.0,
+            # "RF_HAA": 0.0, "RF_HFE": 0.7, "RF_KFE": -1.35, "RF_WHEEL_MOTOR": 0.0,
+            # "RH_HAA": 0.0, "RH_HFE": -0.7, "RH_KFE": 1.35, "RH_WHEEL_MOTOR": 0.0,
+            
+            #机身高度54
+            "LF_HAA": 0.0, "LF_HFE": 0.58, "LF_KFE": -1.0, "LF_WHEEL_MOTOR": 0.0,
+            "LH_HAA": 0.0, "LH_HFE": -0.58, "LH_KFE": 1.0, "LH_WHEEL_MOTOR": 0.0,
+            "RF_HAA": 0.0, "RF_HFE": 0.58, "RF_KFE": -1.0, "RF_WHEEL_MOTOR": 0.0,
+            "RH_HAA": 0.0, "RH_HFE": -0.58, "RH_KFE": 1.0, "RH_WHEEL_MOTOR": 0.0,
+     
         }
 
     class control(LeggedRobotCfg.control):
@@ -100,18 +108,24 @@ class FDWheelCfg(LeggedRobotCfg):
             wheel_lateral_slip = -0.2
             stand_still=-0.5
             dof_pos_limits = -5.0
-            hip_default = -1.0
+            hip_default = -3.0  # M20-style HAA default-pose L2 norm penalty.
             run_still=-0.05
+            dof_vel_limits = -1.0  # 首轮实验值，不是已经验证的最优值
+            
         only_positive_rewards = True # if true negative total rewards are clipped at zero (avoids early termination problems)
         tracking_sigma = 0.25 # tracking reward = exp(-error^2/sigma)
         soft_dof_pos_limit = 0.9 # percentage of urdf limits, values above this limit are penalized
         soft_dof_vel_limit = 0.9
         soft_torque_limit = 0.9
-        base_height_target = 0.50
+        base_height_target = 0.55
+        hip_stand_still_scale = 5.0
+        hip_command_threshold = 0.1
+        hip_velocity_threshold = 0.5
         # Smoothly activate side-slip cost for lateral/turn commands (m/s, rad/s).
         wheel_lateral_slip_lateral_full = 0.3
         wheel_lateral_slip_yaw_full = 0.5
         max_contact_force = 150. # forces above this value are penalized
+        
     class normalization(LeggedRobotCfg.normalization):
         clip_actions = 100.0
 

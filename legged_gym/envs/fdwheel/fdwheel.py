@@ -341,7 +341,10 @@ class FDWheelRobot(LeggedRobot):
 
     def _reward_hip_default(self):
         hip_ids = [i for i, name in enumerate(self.dof_names) if name.endswith("_HAA")]
-        return torch.sum(torch.square(self.dof_pos[:, hip_ids] - self.default_dof_pos[:, hip_ids]), dim=1)
+        error = (self.dof_pos[:, hip_ids] - self.default_dof_pos[:, hip_ids]).norm(dim=1)
+        moving = ((self.commands[:, :3].norm(dim=1) > self.cfg.rewards.hip_command_threshold)
+                  | (self.base_lin_vel[:, :2].norm(dim=1) > self.cfg.rewards.hip_velocity_threshold))
+        return error * torch.where(moving, 1.0, self.cfg.rewards.hip_stand_still_scale)
 
     def _reward_run_still(self):
         error = self.dof_pos - self.default_dof_pos
