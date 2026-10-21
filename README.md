@@ -47,7 +47,7 @@ python -m pip install -e .
 
 git status
 git add .
-git commit -m "Update litewheel config"
+git commit -m "Update office litewheel config"
 git push origin main
 
 ## sim2sim更换网络
@@ -57,6 +57,10 @@ git push origin main
 ## 检查sim2sim跟最新训练的网络是否一致
 
  sha256sum /home/yons/harryma/titatit_dreamwaq-main/logs/zg_m1/exported/policies/policy_dwaq.onnx /home/yons/harryma/titatit_dreamwaq-main/ddw_legged_rl/install/controller_drl/share/policy/zg_m1/wheel_run/wheel_run.onnx
+
+## 开启sim2sim
+
+cd /home/yons/harryma/titatit_dreamwaq-main/ddw_legged_rl && source /opt/ros/humble/setup.bash && source install/setup.bash && env -u __NV_PRIME_RENDER_OFFLOAD -u __NV_PRIME_RENDER_OFFLOAD_PROVIDER -u DRI_PRIME __GLX_VENDOR_LIBRARY_NAME=mesa LIBGL_ALWAYS_SOFTWARE=1 robot=litewheel sn=sim remote_type=joy slam_est_pose=off colony_id=0 ros2 launch robot_plan rl_dynawheel_simulation.launch.py
 
 ## Use
 
